@@ -1,0 +1,10 @@
+VERSION: "3.8"
+
+services:
+  telegram-bot:
+    build: .
+    container_name: ufc_ru_telegram_bot
+    restart: always
+
+    env_file:
+      - ..env
