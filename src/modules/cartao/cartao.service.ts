@@ -1,4 +1,4 @@
-import { consultarUsuario } from "../infra/sipac/cartaoScraper.js";
+import { consultarUsuario } from "./cartao.scraper.js";
 
 export async function obterDadosCartao(matricula: string, numeroCartao: string) {
     const dados = await consultarUsuario(matricula, numeroCartao)

@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api"
-import { obterCardapioFormatado } from "../services/cardapioService.js"
+import { obterCardapioFormatado } from "./cardapio.command.js"
 
 export default function (bot: TelegramBot) {
 

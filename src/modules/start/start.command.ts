@@ -1,4 +1,4 @@
-import { Command } from "../core/command.js"
+import { Command } from "../../core/command.js"
 
 const startCommand: Command = {
     name: "start",

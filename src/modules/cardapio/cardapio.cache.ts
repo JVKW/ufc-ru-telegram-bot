@@ -1,4 +1,4 @@
-import { Refeicao } from "../core/types.js";
+import { Refeicao } from "../../core/types.js";
 
 interface Cache {
     data: Refeicao[]

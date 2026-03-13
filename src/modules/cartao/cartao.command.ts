@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { obterDadosCartao } from "../services/cartaoService.js";
+import { obterDadosCartao } from "./cartao.service.js";
 
 export default function(bot: TelegramBot) {
     bot.onText(/\/cartao(?:\s+(\d+))?(?:\s+(\d+))?/, async (msg, match) => {

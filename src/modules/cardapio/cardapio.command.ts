@@ -1,8 +1,8 @@
-import { carregarCardapio } from "../infra/scrapers/cardapioScraper.js";
-import { formatarDataHoje } from "../utils/date.js";
-import { getCardapioCache, setCardapioCache } from "../cache/cardapioCache.js";
-import { Refeicao } from "../core/types.js";
-import { CARDAPIO_BASE_URL, EMOJI_REFEICAO, EMOJI_CATEGORIAS } from "../config.js";
+import { carregarCardapio } from "./cardapio.scraper.js";
+import { formatarDataHoje } from "../../utils/date.js";
+import { getCardapioCache, setCardapioCache } from "./cardapio.cache.js";
+import { Refeicao } from "../../core/types.js";
+import { CARDAPIO_BASE_URL, EMOJI_REFEICAO, EMOJI_CATEGORIAS } from "../../config.js";
 
 export async function obterCardapioFormatado(): Promise<string> {
 
