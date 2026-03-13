@@ -1,59 +1,73 @@
-import * as cheerio from 'cheerio'
-import { Refeicao, Categoria } from '../../core/types.js'
+import * as cheerio from "cheerio"
+import { Refeicao, Categoria } from "../../core/types.js"
 
 export async function carregarCardapio(url: string): Promise<Refeicao[]> {
-    const response = await fetch(url)
 
-    if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status}`)
-    }
+  const response = await fetch(url)
 
-    const html = await response.text()
-    const $ = cheerio.load(html)
+  if (!response.ok) {
+    throw new Error(`Erro HTTP: ${response.status}`)
+  }
 
-    const resultado: Refeicao[] = []
+  const html = await response.text()
+  const $ = cheerio.load(html)
 
-    $('table.refeicao').each((_, table) => {
-        const classes = $(table).attr('class') || ''
-        const tipo = (classes.split(' ')[1] || classes.split(' ')[0] || 'desconhecido').trim();
+  const refeicoes: Refeicao[] = []
 
-        const categorias: Categoria[] = []
+  $("table.refeicao").each((_, table) => {
 
-        $(table)
-            .find('tr.item')
-            .each((_, row) => {
-                const tds = $(row).find('td')
+    const classes = $(table).attr("class") || ""
 
-                const nomeCategoria = $(tds[0]).text().trim()
+    const tipo =
+      classes.split(" ")[1] ||
+      classes.split(" ")[0] ||
+      "desconhecido"
 
-                const itens = $(tds[1])
-                    .find('span.desc')
-                    .toArray()
-                    .reduce<string[]>((acc, el) => {
-                        const $el = $(el)
-                        const texto = $el.text().trim()
+    const categorias: Categoria[] = []
 
-                        if (!texto) return acc
+    $(table)
+      .find("tr.item")
+      .each((_, row) => {
 
-                        if ($el.hasClass('gluten') && acc.length > 0) {
-                            acc[acc.length - 1] += ` ${texto}`
-                        } else {
-                            acc.push(texto)
-                        }
+        const tds = $(row).find("td")
 
-                        return acc
-                    }, [])
+        const nomeCategoria = $(tds[0]).text().trim()
 
-                if (nomeCategoria) {
-                    categorias.push({
-                        nome: nomeCategoria,
-                        itens
-                    })
-                }
-            })
+        const itens: string[] = []
 
-        resultado.push({ tipo, categorias })
+        $(tds[1])
+          .find("span.desc")
+          .each((_, el) => {
+
+            const $el = $(el)
+
+            const texto = $el.text().trim()
+
+            if (!texto) return
+
+            if ($el.hasClass("gluten") && itens.length > 0) {
+              itens[itens.length - 1] += ` ${texto}`
+            } else {
+              itens.push(texto)
+            }
+
+          })
+
+        if (nomeCategoria) {
+          categorias.push({
+            nome: nomeCategoria,
+            itens
+          })
+        }
+
+      })
+
+    refeicoes.push({
+      tipo: tipo.trim(),
+      categorias
     })
 
-    return resultado
+  })
+
+  return refeicoes
 }

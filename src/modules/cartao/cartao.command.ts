@@ -1,41 +1,52 @@
-import TelegramBot from "node-telegram-bot-api";
-import { obterDadosCartao } from "./cartao.service.js";
+import { Command } from "../../core/command.js"
+import { obterDadosCartao } from "./cartao.service.js"
 
-export default function(bot: TelegramBot) {
-    bot.onText(/\/cartao(?:\s+(\d+))?(?:\s+(\d+))?/, async (msg, match) => {
-        const chatId = msg.chat.id
+const cartaoCommand: Command = {
+  name: "cartao",
+  description: "Consulta informações do cartão RU",
 
-        const numeroCartao = match?.[2]
-        const matricula = match?.[1]
+  async execute({ ctx, args }) {
 
-        if (!numeroCartao || !matricula) {
-            return bot.sendMessage(chatId, "❌ Uso correto:\n/cartao `<matrícula>` `<número do cartão RU>`", { parse_mode: "Markdown" })
-        }
+    const matricula = args[0]
+    const numeroCartao = args[1]
 
-        try {
-            const dados = await obterDadosCartao(matricula, numeroCartao)
+    if (!matricula || !numeroCartao) {
+      await ctx.reply(
+        "❌ Uso correto:\n/cartao `<matrícula>` `<número do cartão RU>`",
+        { parse_mode: "Markdown" }
+      )
+      return
+    }
 
-            if (!dados) {
-                return bot.sendMessage(
-                    chatId,
-                    "❌ Cartão ou matrícula não encontrados.\n\nVerifique os dados e tente novamente."
-                )
-            }
+    try {
+      const dados = await obterDadosCartao(matricula, numeroCartao)
 
-            const message = [
-                "📇 *Informações do Cartão*",
-                "",
-                `👤 *Nome*: ${dados.nome}`,
-                `🎓 *Matrícula*: ${dados.matricula}`,
-                `💰 *Valor por crédito*: ${dados.valorCredito}`,
-                `💳 *Saldo*: ${dados.saldo} ${Number(dados.saldo) === 1 ? 'crédito' : 'créditos'}`
-            ].join("\n")
+      if (!dados) {
+        await ctx.reply(
+          "❌ Cartão ou matrícula não encontrados.\n\nVerifique os dados e tente novamente."
+        )
+        return
+      }
 
-            bot.sendMessage(chatId, message, { parse_mode: "Markdown" })
+      const message = [
+        "📇 *Informações do Cartão*",
+        "",
+        `👤 *Nome*: ${dados.nome}`,
+        `🎓 *Matrícula*: ${dados.matricula}`,
+        `💰 *Valor por crédito*: ${dados.valorCredito}`,
+        `💳 *Saldo*: ${dados.saldo} ${Number(dados.saldo) === 1 ? "crédito" : "créditos"}`
+      ].join("\n")
 
-        } catch (error) {
-            console.error(error)
-            bot.sendMessage(chatId, "❌ Erro ao consultar cartão.")
-        }
-    })
+      await ctx.reply(message, {
+        parse_mode: "Markdown"
+      })
+
+    } catch (error) {
+      console.error(error)
+      await ctx.reply("❌ Erro ao consultar cartão.")
+
+    }
+  }
 }
+
+export default cartaoCommand

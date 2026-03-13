@@ -1,10 +1,9 @@
-
 export interface Categoria {
-    nome: string;
-    itens: string[]
+  nome: string
+  itens: string[]
 }
 
 export interface Refeicao {
-    tipo: string;
-    categorias: Categoria[];
+  tipo: string
+  categorias: Categoria[]
 }
