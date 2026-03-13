@@ -1,22 +1,19 @@
-import TelegramBot from "node-telegram-bot-api";
+import { Context } from "grammy"
 
 export interface CommandArg {
-    name: String
-    // description?: string
-    required?: boolean
+  name: string
+  required?: boolean
 }
 
 export interface CommandContext {
-    bot: TelegramBot
-    msg: TelegramBot.Message
-    args: string[]
-    chatId: string
+  ctx: Context
+  args: string[]
 }
 
 export interface Command {
-    name: string
-    description?: string
+  name: string
+  description?: string
+  args?: CommandArg[]
 
-    args?: CommandArg[]
-    execute(ctx: CommandContext): Promise<void> | void
+  execute(context: CommandContext): Promise<void> | void
 }
