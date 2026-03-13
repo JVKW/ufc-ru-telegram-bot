@@ -1,59 +1,25 @@
-import { carregarCardapio } from "./cardapio.scraper.js";
-import { formatarDataHoje } from "../../utils/date.js";
-import { getCardapioCache, setCardapioCache } from "./cardapio.cache.js";
-import { Refeicao } from "../../core/types.js";
-import { CARDAPIO_BASE_URL, EMOJI_REFEICAO, EMOJI_CATEGORIAS } from "../../config.js";
+import { Command } from "../../core/command.js"
+import { obterCardapioFormatado } from "./cardapio.service.js"
 
-export async function obterCardapioFormatado(): Promise<string> {
+const cardapioCommand: Command = {
+  name: "cardapio",
+  description: "Mostra o cardápio do RU",
 
-    let refeicoes: Refeicao[]
-    const cache = getCardapioCache()
+  async execute({ ctx }) {
+    try {
+      const message = await obterCardapioFormatado()
 
-    if (cache) {
-        refeicoes = cache
-    } else {
-        const data = formatarDataHoje()
-        const url = `${CARDAPIO_BASE_URL}/${data}`
+      await ctx.reply(message, {
+        parse_mode: "Markdown"
+      })
 
-        refeicoes = await carregarCardapio(url)
-        setCardapioCache(refeicoes)
+    } catch (error) {
+
+      console.error(error)
+      await ctx.reply("❌ Erro ao buscar cardápio.")
+
     }
-
-    const dataObj = new Date()
-    const dataFormatada = new Intl.DateTimeFormat("pt-BR", {
-        weekday: "long",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-    }).format(dataObj)
-
-    const linhas: string[] = []
-
-    linhas.push(`🍛 *CARDÁPIO UFC RUSSAS*`)
-    linhas.push(`📅 ${dataFormatada}`)
-
-    for (const refeicao of refeicoes) {
-
-        const emojiRef = EMOJI_REFEICAO[refeicao.tipo.toUpperCase()] || "🍽️"
-
-        linhas.push("----------------------------------------------------------\n")
-        linhas.push(`${emojiRef} *${refeicao.tipo.toUpperCase()}*`)
-        linhas.push("----------------------------------------------------------\n")
-
-        for (const categoria of refeicao.categorias) {
-            const emojiCat = EMOJI_CATEGORIAS[categoria.nome] || "🍽️"
-
-            linhas.push(`${emojiCat} *${categoria.nome}*`)
-
-            categoria.itens.forEach(item => {
-                linhas.push(`- ${item}`)
-            })
-
-            linhas.push("")
-        }
-
-        linhas.push("")
-    }
-
-    return linhas.join("\n")
+  }
 }
+
+export default cardapioCommand
