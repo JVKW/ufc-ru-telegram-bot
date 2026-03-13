@@ -1,14 +1,15 @@
 import { Command } from "../../core/command.js"
 
 const startCommand: Command = {
-    name: "start",
-    description: "Mostra a mensagem de boas-vindas",
-    execute({ bot, msg }) {
-        bot.sendMessage(
-            msg.chat.id,
-            '🥗 Bem-vindo ao Bot do Cardápio da UFC Russas!\n\nUse /cardapio para ver o de hoje.\nUse /cartao <matrícula> <número do cartão RU> para ver seu saldo atual'
-        )
-    }
+  name: "start",
+
+  async execute({ ctx }) {
+    const name = ctx.from?.first_name || "amigo"
+
+    await ctx.reply(
+      `👋 Olá ${name}!\n\nBem-vindo ao bot da UFC`
+    )
+  }
 }
 
 export default startCommand
